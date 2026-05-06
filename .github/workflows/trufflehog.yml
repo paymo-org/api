@@ -1,0 +1,89 @@
+name: trufflehog
+# Runs on:
+#   - PRs targeting `release` or `develop` (opened/synchronize/reopened)
+#   - direct pushes to `release` or `develop`
+# The scan is explicitly scoped to the changed commit range via base/head
+# below, so legacy secrets already on the base branch do not re-fail.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  # contents: read       → actions/checkout
+  # issues: write        → actions/github-script createComment (PR comments
+  #                        go through the issues API)
+  # pull-requests: write → kept symmetrical with gitleaks.yml; some
+  #                        github-script paths require it for PR-thread writes
+  contents: read
+  pull-requests: write
+  issues: write
+
+concurrency:
+  # Cancel in-flight runs when a new commit is pushed to the same PR/branch.
+  # Avoids stacked duplicate "secret found" comments during rapid iteration.
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: trufflehog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret scanning
+        # Pinned to a tagged release (not @main) so a compromised or malicious
+        # upstream commit cannot run arbitrary code in this repo's CI on every
+        # PR. Bump this when you intentionally want newer detectors — see
+        # https://github.com/trufflesecurity/trufflehog/releases for the
+        # current latest. For maximum supply-chain safety, replace the tag
+        # with a full commit SHA.
+        uses: trufflesecurity/trufflehog@v3.90.0
+        with:
+          # Scope the scan to the changed commit range. Without these, the
+          # action's internal auto-detection can change between versions
+          # and in some event shapes (merge queue, pull_request_target)
+          # falls back to scanning the entire checkout. Making it explicit
+          # guarantees diff-only behavior regardless of action version.
+          # On `pull_request` use the PR's base/head; on `push` use the
+          # commit range from the push payload (before/after).
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.event.after }}
+          # --results=verified,unknown keeps verified hits plus cases where
+          # verification itself failed (network blocked, API down). Drops
+          # low-signal unverified-only candidates. Tighten to
+          # --results=verified if you want fewer false positives.
+          extra_args: --results=verified,unknown
+
+      - name: Comment on PR if secrets found
+        # Runs only when the scan step failed AND this is a pull_request event.
+        # The comment intentionally does NOT include secret values — it just
+        # points to the run log. Never paste raw findings into PR threads;
+        # comments are visible to anyone with read access and are hard to scrub.
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const repoUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}`;
+            const runUrl = `${repoUrl}/actions/runs/${context.runId}`;
+            const docUrl = `${repoUrl}/blob/${context.payload.repository.default_branch}/.github/SECRET_FOUND.md`;
+            const body = [
+              '### :lock: TruffleHog detected potential secrets in this PR',
+              '',
+              `See the [workflow run logs](${runUrl}) for detector names and file locations.`,
+              '',
+              `**Follow the remediation runbook → [SECRET_FOUND.md](${docUrl}).** Rotate the credential first, then scrub history.`,
+              '',
+              '**Do not paste secret values into this PR thread, issues, or chat** — those surfaces are visible to anyone with read access and are hard to scrub later.'
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

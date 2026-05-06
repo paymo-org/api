@@ -1,0 +1,39 @@
+# Starter Gitleaks configuration.
+#
+# This file extends the default ruleset shipped with Gitleaks. You only need to
+# add entries here when you want to:
+#   - add repo-specific custom rules
+#   - allowlist known-safe values (e.g. example API keys in tests or docs)
+#
+# Reference: https://github.com/gitleaks/gitleaks#configuration
+# Default ruleset: https://github.com/gitleaks/gitleaks/blob/master/config/gitleaks.toml
+
+title = "gitleaks config"
+
+# Pull in the built-in default rules. Remove this line only if you intend to
+# scan with a fully custom ruleset.
+[extend]
+useDefault = true
+
+# ------------------------------------------------------------------
+# Example: allowlist a known-safe fake key used in tests or examples.
+# Uncomment and adapt as needed.
+# ------------------------------------------------------------------
+# [allowlist]
+# description = "Global allowlist"
+# regexes = [
+#   '''AKIAIOSFODNN7EXAMPLE''',              # AWS example key used in docs
+# ]
+# paths = [
+#   '''(.*?)(jpg|png|gif|svg|pdf)$''',       # skip binary assets
+#   '''docs/examples/.*''',                  # skip example files
+# ]
+
+# ------------------------------------------------------------------
+# Example: add a repo-specific custom rule.
+# ------------------------------------------------------------------
+# [[rules]]
+# id = "my-company-internal-token"
+# description = "Internal service token"
+# regex = '''mycompany_[a-z0-9]{32}'''
+# tags = ["token", "mycompany"]
