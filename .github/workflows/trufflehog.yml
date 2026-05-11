@@ -6,7 +6,7 @@ name: trufflehog
 # below, so legacy secrets already on the base branch do not re-fail.
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 

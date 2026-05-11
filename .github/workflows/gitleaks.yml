@@ -7,7 +7,7 @@ name: gitleaks
 # On push events the action scans the pushed commit range.
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
