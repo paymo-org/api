@@ -41,12 +41,14 @@ regexes = [
   '''MUakYT1hv12mgT/Me8TsMiw9gGl+nB+5pUuK1UbY36ykR2Di/4dBmuNYormwYZ7BbLLqJ+5+emQHh2cBW2Xc7g==''',
   '''KMg9Z5S1JGjn1x/bsDl5NpBBw+ua/KRfzMlTL0SYMa0kvf0s4uM7bVzqS1D544H50horNGWwMnDCLRoKMwJw8A==''',
   '''v6k0kR4pNpyQT/boFYDfy62IRoL0Al+hwrMHq7wEwBPkylBCkaBv8XU+m8wFNLwp7KZRo1a3edqg2870JNrCSQoAIrh7eNVZIkDa+VcV7AY=''',
-  '''bi+z6uJ+ahzZKdfM0pu8e+F3OSt1xKShAWdtliiXHlKL6eEbWCOACHQutqPz1IUI+dMqSYuvJ9omKUz+gqmXhdLvkovr+SyE+oR3plvIuuVE=''',
+  '''i+z6uJ+ahzZKdfM0pu8e+F3OSt1xKShAWdtliiXHlKL6eEbWCOACHQutqPz1IUI+dMqSYuvJ9omKUz+gqmXhdLvkovr+SyE+oR3plvIuuVE=''',
   '''token=r2YkY3xCb1dH5UMXGvLrPo0%2FCvXuGhHfGq0K8o91u%2BOMxt0FZ1qjAzVMWz46J2Sde9x4CcY9VeRwovJnmoyi2oWEc9YzTQO0dmd5i9iI9ro%3D''',
   '''token=g9OYdh7uhmLYZl2oBYNI6yq%2BwME0D3MLKGHeCUKe6p7yQCWX1NQKrqeqo0puYXE68DTc%2BMaI1DpOOYvgxkCdRT1nBBp5Vit2vcn8sV72dWs%3D''',
   '''token=v6k0kR4pNpyQT%2FboFYDfy62IRoL0Al%2BhwrMHq7wEwBPkylBCkaBv8XU%2Bm8wFNLwp7KZRo1a3edqg2870JNrCSQoAIrh7eNVZIkDa%2BVcV7AY%3D''',
   '''token=i%2Bz6uJ%2BahzZKdfM0pu8e%2BF3OSt1xKShAWdtliiXHlKL6eEbWCOACHQutqPz1IUI%2BdMqSYuvJ9omKUz%2BgqmXhdLvkovr%2BSyE%2BoR3plvIuuVE%3D''',
-  '''token=OB9L%2BFrmnS6KCYVgE3bQmqF8t3GYCf2ckRFpXmDWw5ELu96pIPuOYFcCII%2Ffs%2B0nu5%2Bz6ra9ySgz%2BglcQFNKLyO8KaLJaNzZdar8lYvNktI%3D'''
+  '''token=OB9L%2BFrmnS6KCYVgE3bQmqF8t3GYCf2ckRFpXmDWw5ELu96pIPuOYFcCII%2Ffs%2B0nu5%2Bz6ra9ySgz%2BglcQFNKLyO8KaLJaNzZdar8lYvNktI%3D''',
+  '''#EST-20130729-9''',
+  '''apikey:X'''
 ]
 
 # ------------------------------------------------------------------
