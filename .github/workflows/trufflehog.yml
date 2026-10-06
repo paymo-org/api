@@ -31,7 +31,7 @@ jobs:
     name: trufflehog
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -42,7 +42,7 @@ jobs:
         # https://github.com/trufflesecurity/trufflehog/releases for the
         # current latest. For maximum supply-chain safety, replace the tag
         # with a full commit SHA.
-        uses: trufflesecurity/trufflehog@v3.90.0
+        uses: trufflesecurity/trufflehog@v3.98.0
         with:
           # Scope the scan to the changed commit range. Without these, the
           # action's internal auto-detection can change between versions
@@ -65,7 +65,7 @@ jobs:
         # points to the run log. Never paste raw findings into PR threads;
         # comments are visible to anyone with read access and are hard to scrub.
         if: failure() && github.event_name == 'pull_request'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
