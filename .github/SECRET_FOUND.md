@@ -83,6 +83,40 @@ For public repos, also assume external mirrors (GH Archive, code-search services
 
 After the force-push, the secret-scanning workflow re-runs automatically and the check should pass. Once it does, the PR is mergeable again.
 
+## Alternative: suppress the dead finding without rewriting history
+
+Steps 3–6 rewrite git history. That's disruptive — every collaborator must re-clone, every open PR rebases, and external mirrors keep the old commits anyway. If you've completed **Step 1 (rotation)** and the credential is confirmed dead, you can skip the history rewrite and add a narrow allowlist entry so the scanner stops re-reporting it.
+
+This is a judgement call. Rewrite history if legal/compliance requires it, if the repo is private with a small team, or if the secret grants access to data that was sensitive at the time of exposure. Otherwise, suppression is usually the lower-cost path — and rotation is what actually closed the hole.
+
+### Gitleaks — `.gitleaksignore` by fingerprint
+
+Gitleaks emits a fingerprint per finding: `<commit>:<file>:<rule-id>:<line>`. The per-repo summary md in `security/run/<run>/<repo>/gitleaks-*.md` lists them in the Details table. Paste the exact fingerprints into a `.gitleaksignore` at the repo root, annotated with the revocation context:
+
+```
+# revoked 2026-05-12 — AWS key rotated in vault, ticket SEC-482
+a1b2c3d4e5f6:infra/ci/deploy.sh:aws-access-token:42
+a1b2c3d4e5f6:infra/ci/deploy.sh:aws-secret-key:43
+```
+
+For broader scope (same dead key across many files), prefer the `commits` allowlist in `.gitleaks.toml` — pin the dead commit SHA — over a regex. A regex that hides one dead AWS key will hide future live ones too.
+
+### TruffleHog — `--exclude-paths` or rely on verification
+
+TruffleHog has no `.trufflehogignore` file. Two options:
+
+1. **Path-scoped:** add an `exclude.txt` listing file globs and pass `--exclude-paths=exclude.txt`. Best when the dead key sits in a known fixture or config file.
+2. **Trust the verifier:** TruffleHog calls the provider's API to confirm the key still works. Once you've rotated, re-run with verification on — the finding flips from `verified=true` to `verified=false` in the per-repo summary. Workflows that gate on `--results=verified` then pass without any allowlist.
+
+Re-run the scan after revocation and confirm the verifier sees the key as dead **before** adding an allowlist entry; otherwise you risk suppressing a finding that's still live.
+
+### Allowlist hygiene
+
+- Scope narrowly — fingerprint or specific path, never a broad regex.
+- Annotate every entry with the date, who revoked it, and the ticket link.
+- Commit the allowlist file alongside the rotation PR so the audit trail is in one place.
+- Review the allowlist periodically; entries for keys no longer reachable in history can be removed.
+
 ## Preventing repeats
 
 - Run a pre-commit secret scanner locally: [gitleaks](https://github.com/gitleaks/gitleaks) or [pre-commit](https://pre-commit.com/) + [detect-secrets](https://github.com/Yelp/detect-secrets).

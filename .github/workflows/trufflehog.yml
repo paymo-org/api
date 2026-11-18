@@ -1,7 +1,8 @@
 name: trufflehog
 # Runs on:
-#   - PRs targeting `release` or `develop` (opened/synchronize/reopened)
-#   - direct pushes to `release` or `develop`
+#   - pull requests (opened/synchronize/reopened)
+#   - direct pushes to `master`
+#   - manual dispatch
 # The scan is explicitly scoped to the changed commit range via base/head
 # below, so legacy secrets already on the base branch do not re-fail.
 on:

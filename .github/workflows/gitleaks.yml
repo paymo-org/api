@@ -1,8 +1,9 @@
 name: gitleaks
 # Runs on:
-#   - PRs targeting `release` or `develop` (opened/synchronize/reopened)
-#   - direct pushes to `release` or `develop`
-# gitleaks-action@v2 auto-scopes PR scans to the PR's commit range, so
+#   - pull requests (opened/synchronize/reopened)
+#   - direct pushes to `master`
+#   - manual dispatch
+# gitleaks-action auto-scopes PR scans to the PR's commit range, so
 # legacy secrets already on the base branch do not re-fail every new PR.
 # On push events the action scans the pushed commit range.
 on:
@@ -51,6 +52,10 @@ jobs:
           # https://gitleaks.io/products.html and add it to repo secrets
           # as GITLEAKS_LICENSE.
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          # gitleaks-action defaults to a fixed, old gitleaks (8.24.3), which
+          # silently ignores the [[allowlists]] syntax in .gitleaks.toml
+          # (gitleaks >= 8.25). `latest` always installs the newest release.
+          GITLEAKS_VERSION: latest
 
       - name: Comment on PR if secrets found
         # Runs only when the scan step failed AND this is a pull_request event.
